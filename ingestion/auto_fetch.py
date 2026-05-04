@@ -5,7 +5,6 @@ import json
 import re
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote_plus
 
 import requests
 
@@ -172,8 +171,43 @@ def build_medical_query(user_input: str, mode: str = "symptoms") -> str:
     if mode == "report":
         return f'clinical laboratory interpretation guideline abnormal blood report {base}'
     if mode == "drug":
-        return f'drug safety dosage adverse effects guideline {base}'
+        tokens = re.findall(r"[a-zA-Z][a-zA-Z0-9-]{2,}", base.lower())
+        stop = {
+            "what", "are", "is", "the", "of", "and", "for", "with", "in", "on", "about",
+            "side", "effects", "warnings", "dose", "dosage", "drug", "medicine", "tablet",
+            "capsule", "syrup", "information", "rag",
+        }
+        candidates = [t for t in tokens if t not in stop]
+        med = candidates[0] if candidates else ""
+        if med == "paracetamol":
+            med_query = '"paracetamol" OR "acetaminophen"'
+        elif med == "acetaminophen":
+            med_query = '"acetaminophen" OR "paracetamol"'
+        elif med:
+            med_query = f'"{med}"'
+        else:
+            med_query = f'"{base}"'
+        return f'{med_query} drug safety dosing contraindications side effects warnings monograph'
     return f'clinical guideline differential diagnosis symptoms {base}'
+
+
+def _query_from_report_text(text: str, max_terms: int = 20) -> str:
+    tokens = re.findall(r"[a-zA-Z][a-zA-Z0-9-]{2,}", text.lower())
+    if not tokens:
+        return ""
+    stop = {
+        "the", "and", "for", "with", "from", "that", "this", "were", "was", "are", "has", "had",
+        "have", "into", "after", "before", "when", "where", "which", "patient", "report", "hospital",
+        "doctor", "dr", "case", "there", "their", "than", "then", "not", "any", "none",
+    }
+    freq: dict[str, int] = {}
+    for token in tokens:
+        if token in stop or len(token) < 3:
+            continue
+        freq[token] = freq.get(token, 0) + 1
+    ranked = sorted(freq.items(), key=lambda x: x[1], reverse=True)
+    key_terms = [term for term, _count in ranked[:max_terms]]
+    return " ".join(key_terms)
 
 
 def auto_fetch_for_input(
@@ -183,11 +217,31 @@ def auto_fetch_for_input(
     epmc_limit: int = 4,
     download_pdfs: bool = True,
     rebuild: bool = True,
+    local_report_text: str = "",
+    local_report_name: str = "",
+    **_kwargs: Any,
 ) -> dict[str, Any]:
-    query = build_medical_query(user_input, mode=mode)
+    report_focus = _query_from_report_text(local_report_text)
+    query_seed = f"{user_input} {report_focus}".strip() if report_focus else user_input
+    query = build_medical_query(query_seed, mode=mode)
     docs: list[dict[str, Any]] = []
     pdfs: list[str] = []
     errors: list[str] = []
+
+    # Always persist uploaded/pasted report context when provided, so later analysis
+    # (even with fetch checkbox OFF) can still retrieve this evidence from the index.
+    if local_report_text.strip():
+        local_key = f"{local_report_name}:{local_report_text[:1200]}"
+        docs.append(
+            {
+                "id": _doc_id("uploaded_report", local_key),
+                "title": local_report_name or "Uploaded Medical Report",
+                "source_type": "uploaded_report",
+                "url": "",
+                "text": local_report_text[:24000],
+                "query": query,
+            }
+        )
 
     try:
         docs.extend(_pubmed_docs(query, pubmed_limit))
@@ -202,7 +256,7 @@ def auto_fetch_for_input(
         errors.append(f"Europe PMC fetch failed: {exc}")
 
     added = _append_docs(docs)
-    index_path = str(build_index()) if rebuild and added else None
+    index_path = str(build_index()) if rebuild and docs else None
     return {
         "query": query,
         "mode": mode,

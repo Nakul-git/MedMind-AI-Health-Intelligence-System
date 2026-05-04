@@ -1,0 +1,12 @@
+[
+  {
+    "question": "What are warning signs in chest pain?",
+    "must_include": ["chest", "pain", "warning"],
+    "top_k": 6
+  },
+  {
+    "question": "What are key recommendations from recent clinical guidelines for post-COVID care?",
+    "must_include": ["guideline", "recommendation"],
+    "top_k": 6
+  }
+]
