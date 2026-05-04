@@ -1,4 +1,4 @@
-# 🏥 MedMind — AI Health Intelligence System
+# 🏥 MedMind - AI Health Intelligence System
 
 > A **multimodal AI health intelligence system** combining Clinical RAG, medical document understanding, symptom reasoning, drug information retrieval, report analysis, and X-ray/image interpretation into one educational decision-support platform.
 
@@ -10,7 +10,7 @@
 
 MedMind is not just a medical chatbot.
 
-It takes **symptoms, lab reports, PDFs, prescriptions, and medical images** — retrieves relevant clinical evidence, reasons over the information, and returns **structured insights** with risk levels, possible conditions, recommendations, and source-backed explanations.
+It takes **symptoms, lab reports, PDFs, prescriptions, and medical images** retrieves relevant clinical evidence, reasons over the information, and returns **structured insights** with risk levels, possible conditions, recommendations, and source-backed explanations.
 
 ---
 
@@ -386,7 +386,7 @@ It does **not** replace:
 - Emergency care
 - Professional medical judgment
 
-> 🚨 **Urgent symptoms** — chest pain, breathing difficulty, confusion, fainting, severe dehydration, seizures, or rapidly worsening illness — require **immediate medical care**.
+> 🚨 **Urgent symptoms** - chest pain, breathing difficulty, confusion, fainting, severe dehydration, seizures, or rapidly worsening illness - require **immediate medical care**.
 
 ---
 
