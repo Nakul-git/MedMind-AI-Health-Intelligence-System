@@ -1,0 +1,5 @@
+Hemoglobin: 10.8 g/dL
+White Blood Cells: 13200 /uL
+Platelets: 145000 /uL
+Fasting Glucose: 132 mg/dL
+

@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and local runtime output
+*.log
+*.err.log
+logs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# MedMind generated artifacts
+data/embeddings/
+data/knowledge_base/auto_ingested.jsonl
+data/medical_papers/pdfs/
+data/reports/_uploaded*
+data/reports/_image_upload*
+data/reports/_api_vision_test*
+data/reports/_vision_test*
+
+# Large/raw local medical files. Keep curated seed JSONL/TXT files tracked.
+data/medical_papers/*
+!data/medical_papers/.gitkeep
+data/reports/*
+!data/reports/example_blood_report.txt
+
