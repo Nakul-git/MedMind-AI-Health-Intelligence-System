@@ -1,4 +1,4 @@
-# MedMind
+# 🧠MedMind-AI Health Intelligence System
 
 MedMind is an AI health intelligence system prototype for multimodal clinical RAG and decision support.
 
